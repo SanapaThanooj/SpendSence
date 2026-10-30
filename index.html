@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#4f46e5"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%234f46e5'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle' fill='white' font-family='Arial' font-weight='800'%3EP%3C/text%3E%3C/svg%3E">
-<title>Pocketwise — Expense Tracker</title>
+<title>SpendSence — Expense Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#0f172a;--muted:#64748b;--paper:#f3f4f9;--card:#fff;--line:#e7eaf3;--blue:#4f46e5;--btn:#4f46e5;--purple:#7c3aed;--gold:#c8a24a;--green:#059669;--red:#e11d48;--orange:#d97706;--soft:#eef0ff;--soft-green:#e5f6ee;--soft-red:#fdebef;--soft-orange:#fff2dd;--shadow:0 1px 2px #0f172a0a,0 10px 30px -12px #1e1b4b24;--shadow-lg:0 1px 2px #0f172a0a,0 24px 48px -16px #1e1b4b33;--glow:radial-gradient(900px 420px at 85% -10%,#7c3aed14,transparent 60%),radial-gradient(700px 380px at -5% 10%,#4f46e512,transparent 60%);--ease:cubic-bezier(.2,.8,.2,1);color-scheme:light}
@@ -226,7 +226,7 @@ dialog::backdrop{background:#0b0f2680;backdrop-filter:blur(6px)}
 <body>
 <div class="app">
   <aside class="side">
-    <div class="brand"><span class="logo">P</span>pocketwise</div>
+    <div class="brand"><span class="logo">P</span>SpendSence</div>
     <button class="primary side-add" id="addBtn">+ Add transaction</button>
     <nav class="nav" aria-label="Sections">
       <button class="active" data-view="overview"><span class="ic">⌂</span>Overview</button>
@@ -425,7 +425,7 @@ dialog::backdrop{background:#0b0f2680;backdrop-filter:blur(6px)}
 </form></dialog>
 
 <dialog id="genModal"><form class="modal" id="genForm"><h2 id="genTitle"></h2><div class="form" id="genBody"></div><div class="dlg-actions"><button type="button" class="cancel" data-close>Cancel</button><button class="primary">Save</button></div></form></dialog>
-<div id="lock" hidden><form id="lockForm"><div class="logo">P</div><h2 style="margin:0">Pocketwise is locked</h2><input id="pinIn" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="PIN"><button class="primary">Unlock</button><div id="lockErr" class="hint"></div></form></div>
+<div id="lock" hidden><form id="lockForm"><div class="logo">P</div><h2 style="margin:0">SpendSence is locked</h2><input id="pinIn" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="PIN"><button class="primary">Unlock</button><div id="lockErr" class="hint"></div></form></div>
 <div id="toast" role="status" aria-live="polite" hidden><span id="toastMsg"></span><button id="toastBtn" hidden>Undo</button></div>
 
 <script>
@@ -459,7 +459,7 @@ const PALETTE=['#405cf5','#8b5cf6','#f59e0b','#12b981','#ef6b73','#06b6d4','#ec4
 const catColor=c=>{const i=CATS.expense.indexOf(c);return PALETTE[(i<0?CATS.expense.length:i)%PALETTE.length]};
 
 const LOCALE={USD:'en-US',INR:'en-IN',EUR:'en-IE',GBP:'en-GB',JPY:'ja-JP',AED:'en-AE',AUD:'en-AU',CAD:'en-CA'};
-let currency=store.raw('pocketwise-currency',null)||((navigator.language||'').endsWith('-IN')?'INR':'USD');
+let currency=store.raw('SpendSence-currency',null)||((navigator.language||'').endsWith('-IN')?'INR':'USD');
 if(!LOCALE[currency])currency='USD';
 let fmt,fmtCompact;
 const setFmt=()=>{fmt=new Intl.NumberFormat(LOCALE[currency],{style:'currency',currency});fmtCompact=new Intl.NumberFormat(LOCALE[currency],{style:'currency',currency,notation:'compact',maximumFractionDigits:1})};
@@ -476,18 +476,18 @@ const seedData=()=>[
 ].map(([description,category,amount,type,date])=>norm({description,category,amount,type,date}));
 
 let tx,bills,budgets,profile;
-const hadData=store.json('pocketwise',null);
+const hadData=store.json('SpendSence',null);
 tx=(Array.isArray(hadData)?hadData:seedData()).map(norm);
-if(!Array.isArray(hadData)){store.setJson('pocketwise',tx);store.setRaw('pocketwise-sample','1')}
-bills=store.json('pocketwise-bills',[]).filter(b=>b&&b.dueDate).map(b=>({...b,id:b.id||uid(),amount:+b.amount||0}));
-budgets=store.json('pocketwise-budgets',null)||{};
-{const legacy=+store.raw('pocketwise-budget',0);if(legacy&&budgets.default==null)budgets.default=legacy}
-profile=store.json('pocketwise-user',null)||{name:'',email:''};
+if(!Array.isArray(hadData)){store.setJson('SpendSence',tx);store.setRaw('SpendSence-sample','1')}
+bills=store.json('SpendSence-bills',[]).filter(b=>b&&b.dueDate).map(b=>({...b,id:b.id||uid(),amount:+b.amount||0}));
+budgets=store.json('SpendSence-budgets',null)||{};
+{const legacy=+store.raw('SpendSence-budget',0);if(legacy&&budgets.default==null)budgets.default=legacy}
+profile=store.json('SpendSence-user',null)||{name:'',email:''};
 const defX=()=>({cb:{},rec:[],goals:[],accts:[{id:'a_bank',name:'Bank account',kind:'bank',opening:0},{id:'a_cash',name:'Cash',kind:'cash',opening:0}],xfers:[]});
-let X=Object.assign(defX(),store.json('pocketwise-x',{}));
+let X=Object.assign(defX(),store.json('SpendSence-x',{}));
 const S={view:'overview',month:curMonth,sort:{k:'date',dir:-1},q:'',type:'all',cat:'all'};
 
-const save=()=>{store.setJson('pocketwise',tx);store.setJson('pocketwise-bills',bills);store.setJson('pocketwise-budgets',budgets);store.setJson('pocketwise-user',profile);store.setJson('pocketwise-x',X);scheduleBackup()};
+const save=()=>{store.setJson('SpendSence',tx);store.setJson('SpendSence-bills',bills);store.setJson('SpendSence-budgets',budgets);store.setJson('SpendSence-user',profile);store.setJson('SpendSence-x',X);scheduleBackup()};
 const budgetFor=m=>m==='all'?0:(budgets[m]??budgets.default??0);
 const period=(m=S.month)=>m==='all'?tx:tx.filter(x=>x.date.startsWith(m));
 const totals=l=>l.reduce((a,x)=>{x.type==='income'?a.inc+=x.amount:a.exp+=x.amount;a.n++;return a},{inc:0,exp:0,n:0});
@@ -534,7 +534,7 @@ function renderOverview(){
   $('#income').textContent=money(cur.inc);$('#expenses').textContent=money(cur.exp);
   $('#incomeDelta').innerHTML=deltaHTML(cur.inc,prev&&prev.inc,true);
   $('#expenseDelta').innerHTML=deltaHTML(cur.exp,prev&&prev.exp,false);
-  $('#sampleBanner').hidden=store.raw('pocketwise-sample','0')!=='1';
+  $('#sampleBanner').hidden=store.raw('SpendSence-sample','0')!=='1';
 
   // budget alert
   const lim=budgetFor(S.month);let al='';
@@ -773,8 +773,8 @@ $$('[data-view]').forEach(b=>b.onclick=()=>go(b.dataset.view));
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
 $('#addBtn').onclick=$('#addBtn2').onclick=$('#addFab').onclick=()=>openTx();$('#openFuel').onclick=()=>openFuel();$('#openBill').onclick=()=>openBill();
 $('#month').onchange=e=>{S.month=e.target.value;render()};
-$('#currency').onchange=e=>{currency=e.target.value;store.setRaw('pocketwise-currency',currency);setFmt();render()};
-$('#themeBtn').onclick=()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;store.setRaw('pocketwise-theme',t);renderShell()};
+$('#currency').onchange=e=>{currency=e.target.value;store.setRaw('SpendSence-currency',currency);setFmt();render()};
+$('#themeBtn').onclick=()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;store.setRaw('SpendSence-theme',t);renderShell()};
 $('#search').oninput=e=>{S.q=e.target.value.trim();renderTx()};
 $('#typeFilter').onchange=e=>{S.type=e.target.value;renderTx()};
 $('#catFilter').onchange=e=>{S.cat=e.target.value;renderTx()};
@@ -788,8 +788,8 @@ document.addEventListener('click',e=>{
     case 'edit':if(item)(item.category==='Vehicle fuel'&&item.liters)?openFuel(item):openTx(item);break;
     case 'del':if(item){const i=tx.indexOf(item);tx.splice(i,1);save();render();toast('Deleted “'+item.description+'”',()=>{tx.splice(i,0,item);save();render()})}break;
     case 'allfuel':S.cat='Vehicle fuel';S.type='all';S.q='';$('#search').value='';go('transactions');break;
-    case 'clear-sample':tx=[];bills=[];store.setRaw('pocketwise-sample','0');save();render();toast('Sample data cleared');break;
-    case 'keep-sample':store.setRaw('pocketwise-sample','0');render();break;
+    case 'clear-sample':tx=[];bills=[];store.setRaw('SpendSence-sample','0');save();render();toast('Sample data cleared');break;
+    case 'keep-sample':store.setRaw('SpendSence-sample','0');render();break;
   }
 });
 
@@ -810,19 +810,19 @@ $('#excel').onclick=()=>{
   const rows=exportRows();if(!rows.length)return toast('Nothing to export for this period');
   const head=HEAD.map(h=>h.replace('CUR',currency));
   const html='<html><head><meta charset="utf-8"></head><body><table border="1"><tr>'+head.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr>'+rows.map(x=>'<tr>'+rowVals(x).map(v=>`<td>${esc(v)}</td>`).join('')+'</tr>').join('')+'</table></body></html>';
-  download(`pocketwise-${fileTag()}.xls`,'﻿'+html,'application/vnd.ms-excel');
+  download(`SpendSence-${fileTag()}.xls`,'﻿'+html,'application/vnd.ms-excel');
 };
 $('#csv').onclick=()=>{
   const rows=exportRows();if(!rows.length)return toast('Nothing to export for this period');
   // prefix risky leading characters so spreadsheet apps don't treat text as formulas
   const cell=v=>{let s=String(v);if(/^[=+\-@]/.test(s)&&typeof v==='string')s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
   const head=HEAD.map(h=>h.replace('CUR',currency));
-  download(`pocketwise-${fileTag()}.csv`,'﻿'+[head,...rows.map(rowVals)].map(r=>r.map(cell).join(',')).join('\r\n'),'text/csv;charset=utf-8');
+  download(`SpendSence-${fileTag()}.csv`,'﻿'+[head,...rows.map(rowVals)].map(r=>r.map(cell).join(',')).join('\r\n'),'text/csv;charset=utf-8');
 };
 $('#pdf').onclick=()=>{
   const rows=exportRows().reverse();if(!rows.length)return toast('Nothing to export for this period');
   const t=totals(rows),w=window.open('','_blank');if(!w)return toast('Allow pop-ups to export the PDF');
-  w.document.write(`<!doctype html><title>Pocketwise report</title><style>body{font-family:Arial,sans-serif;color:#182238;margin:36px}h1{margin:0 0 4px}p{color:#667;margin:0}.sum{display:flex;gap:28px;margin:22px 0}.sum div{font-size:12px;color:#667}.sum b{display:block;font-size:18px;color:#182238}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}th{background:#f2f4ff}td.r,th.r{text-align:right}footer{margin-top:22px;color:#667;font-size:12px}</style><h1>Pocketwise report</h1><p>${esc(monthLabel(S.month))} · Generated ${esc(new Date().toLocaleDateString())} · Display currency: ${esc(currency)}</p><div class="sum"><div>Income<b>${esc(money(t.inc))}</b></div><div>Expenses<b>${esc(money(t.exp))}</b></div><div>Net<b>${esc(money(t.inc-t.exp))}</b></div><div>Transactions<b>${t.n}</b></div></div><table><tr><th>Date</th><th>Transaction</th><th>Category</th><th class="r">Amount</th></tr>${rows.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.description)}</td><td>${esc(x.category)}</td><td class="r">${x.type==='income'?'+':'-'}${esc(money(x.amount))}</td></tr>`).join('')}</table><footer>Use your browser’s print dialog to save this report as a PDF.</footer>`);
+  w.document.write(`<!doctype html><title>SpendSence report</title><style>body{font-family:Arial,sans-serif;color:#182238;margin:36px}h1{margin:0 0 4px}p{color:#667;margin:0}.sum{display:flex;gap:28px;margin:22px 0}.sum div{font-size:12px;color:#667}.sum b{display:block;font-size:18px;color:#182238}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}th{background:#f2f4ff}td.r,th.r{text-align:right}footer{margin-top:22px;color:#667;font-size:12px}</style><h1>SpendSence report</h1><p>${esc(monthLabel(S.month))} · Generated ${esc(new Date().toLocaleDateString())} · Display currency: ${esc(currency)}</p><div class="sum"><div>Income<b>${esc(money(t.inc))}</b></div><div>Expenses<b>${esc(money(t.exp))}</b></div><div>Net<b>${esc(money(t.inc-t.exp))}</b></div><div>Transactions<b>${t.n}</b></div></div><table><tr><th>Date</th><th>Transaction</th><th>Category</th><th class="r">Amount</th></tr>${rows.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.description)}</td><td>${esc(x.category)}</td><td class="r">${x.type==='income'?'+':'-'}${esc(money(x.amount))}</td></tr>`).join('')}</table><footer>Use your browser’s print dialog to save this report as a PDF.</footer>`);
   w.document.close();w.focus();setTimeout(()=>w.print(),300);
 };
 
@@ -837,7 +837,7 @@ function reportImage(kind){
   const fit=(txt,w)=>{txt=String(txt);if(c.measureText(txt).width<=w)return txt;while(txt.length>1&&c.measureText(txt+'…').width>w)txt=txt.slice(0,-1);return txt+'…'};
   c.fillStyle='#f5f7fb';c.fillRect(0,0,W,H);
   const g=c.createLinearGradient(0,0,W,130);g.addColorStop(0,'#405cf5');g.addColorStop(1,'#8b5cf6');c.fillStyle=g;c.fillRect(0,0,W,130);
-  c.fillStyle='#fff';c.font=`800 30px ${F}`;c.textBaseline='alphabetic';c.fillText('pocketwise',P,66);
+  c.fillStyle='#fff';c.font=`800 30px ${F}`;c.textBaseline='alphabetic';c.fillText('SpendSence',P,66);
   c.font=`500 18px ${F}`;c.globalAlpha=.85;c.fillText('Spending report · '+monthLabel(S.month),P,98);c.textAlign='right';c.fillText('Generated '+new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),W-P,98);c.globalAlpha=1;c.textAlign='left';
   // metric cards
   const cw=(W-2*P-3*16)/4;
@@ -863,12 +863,12 @@ function reportImage(kind){
   data.forEach((d,i)=>{const cx=P+slot*(i+.5),bw2=34;
     [[d.inc,'#0f9f6e',-bw2-3],[d.exp,'#405cf5',3]].forEach(([v,col,dx])=>{if(!(v>0))return;const h=Math.max(3,v/tm*(chartH-10));c.fillStyle=col;rr(cx+dx,chartTop+chartH-h,bw2,h,5);c.fill()});
     c.fillStyle='#6b7890';c.font=`600 14px ${F}`;c.textAlign='center';c.fillText(parseD(d.k+'-01').toLocaleDateString('en-US',{month:'short'}),cx,labelY);c.textAlign='left'});
-  c.fillStyle='#9aa5b8';c.font=`500 13px ${F}`;c.fillText('Display currency: '+currency+' · Made with Pocketwise',P,H-26);
+  c.fillStyle='#9aa5b8';c.font=`500 13px ${F}`;c.fillText('Display currency: '+currency+' · Made with SpendSence',P,H-26);
   const type=kind==='jpg'?'image/jpeg':'image/png';
-  cv.toBlob(b=>b?download(`pocketwise-report-${fileTag()}.${kind}`,b,type):toast('Could not create the image'),type,.92);
+  cv.toBlob(b=>b?download(`SpendSence-report-${fileTag()}.${kind}`,b,type):toast('Could not create the image'),type,.92);
 }
 $('#jpg').onclick=()=>reportImage('jpg');$('#png').onclick=()=>reportImage('png');
-$('#backup').onclick=()=>download(`pocketwise-backup-${today()}.json`,(store.setRaw('pocketwise-lastbk',String(Date.now())),JSON.stringify(snapshot(),null,2)),'application/json');
+$('#backup').onclick=()=>download(`SpendSence-backup-${today()}.json`,(store.setRaw('SpendSence-lastbk',String(Date.now())),JSON.stringify(snapshot(),null,2)),'application/json');
 $('#restore').onclick=()=>$('#restoreFile').click();
 $('#restoreFile').onchange=e=>{
   const file=e.target.files[0];e.target.value='';if(!file)return;
@@ -877,13 +877,13 @@ $('#restoreFile').onchange=e=>{
       if(!confirm(`Replace your current data with ${d.tx.length} transactions from this backup?`))return;
       tx=d.tx.map(norm);bills=Array.isArray(d.bills)?d.bills.filter(b=>b&&b.dueDate).map(b=>({...b,id:b.id||uid(),amount:+b.amount||0})):[];
       budgets=d.budgets&&typeof d.budgets==='object'?d.budgets:{};if(d.profile&&typeof d.profile==='object')profile={name:String(d.profile.name||''),email:String(d.profile.email||'')};
-      if(d.currency&&LOCALE[d.currency]){currency=d.currency;store.setRaw('pocketwise-currency',currency);setFmt()}
-      X=Object.assign(defX(),d.x||{});store.setRaw('pocketwise-sample','0');save();render();toast('Backup restored');
-    }catch{toast('That file isn’t a valid Pocketwise backup')}
+      if(d.currency&&LOCALE[d.currency]){currency=d.currency;store.setRaw('SpendSence-currency',currency);setFmt()}
+      X=Object.assign(defX(),d.x||{});store.setRaw('SpendSence-sample','0');save();render();toast('Backup restored');
+    }catch{toast('That file isn’t a valid SpendSence backup')}
   };r.readAsText(file);
 };
 $('#wipe').onclick=()=>{if(!confirm('Delete ALL transactions, bills and budgets from this device? This cannot be undone.'))return;
-  tx=[];bills=[];budgets={};X=defX();store.setRaw('pocketwise-sample','0');save();render();toast('All data deleted')};
+  tx=[];bills=[];budgets={};X=defX();store.setRaw('SpendSence-sample','0');save();render();toast('All data deleted')};
 
 /* ---------- keyboard ---------- */
 document.addEventListener('keydown',e=>{
@@ -894,7 +894,7 @@ document.addEventListener('keydown',e=>{
 
 
 /* ================= extensions ================= */
-const snapshot=()=>({app:'pocketwise',version:3,tx,bills,budgets,currency,profile,x:X});
+const snapshot=()=>({app:'SpendSence',version:3,tx,bills,budgets,currency,profile,x:X});
 const acct=id=>X.accts.find(a=>a.id===id)||X.accts[0];
 const acctName=x=>acct(x.account).name;
 const bal=a=>{let b=+a.opening||0;tx.forEach(x=>{if(acct(x.account)===a)b+=x.type==='income'?x.amount:-x.amount});X.xfers.forEach(t=>{if(t.to===a.id)b+=t.amount;if(t.from===a.id)b-=t.amount});return round2(b)};
@@ -948,7 +948,7 @@ function catAlerts(){if(S.month==='all')return;const sp=Object.fromEntries(byCat
   $('#budgetAlert').insertAdjacentHTML('beforeend',h)}
 function renderDue(){const items=[...bills.filter(b=>!b.paid&&daysTo(b.dueDate)<=7).map(b=>({n:b.name,d:b.dueDate,a:b.amount})),...X.accts.filter(a=>a.kind==='card'&&bal(a)<0).map(a=>({n:a.name+' card',d:nextDay(a.dueDay||20),a:-bal(a)})).filter(i=>daysTo(i.d)<=7)].sort((a,b)=>a.d.localeCompare(b.d)),canN='Notification' in window&&Notification.permission==='default';
   let h=items.length?`<div class="alert"><span>📅 Due this week: ${items.map(i=>{const n=daysTo(i.d);return `<b>${esc(i.n)}</b> ${money(i.a)} (${n<0?'overdue':n===0?'today':'in '+n+'d'})`}).join(' · ')}</span>${canN?'<button data-x="notif">🔔 Enable reminders</button>':''}</div>`:(canN&&bills.length?'<div class="alert info"><span>Get a notification 1–2 days before a bill is due.</span><button data-x="notif">🔔 Enable reminders</button></div>':'');
-  const lb=+store.raw('pocketwise-lastbk',0);if(tx.length&&store.raw('pocketwise-sample','0')!=='1'&&!bkH&&(!lb||Date.now()-lb>7*864e5))h+=`<div class="alert info"><span>💾 ${lb?'Last backup was '+Math.round((Date.now()-lb)/864e5)+' days ago.':'You haven’t backed up yet.'}</span><button data-go="reports">Back up</button></div>`;
+  const lb=+store.raw('SpendSence-lastbk',0);if(tx.length&&store.raw('SpendSence-sample','0')!=='1'&&!bkH&&(!lb||Date.now()-lb>7*864e5))h+=`<div class="alert info"><span>💾 ${lb?'Last backup was '+Math.round((Date.now()-lb)/864e5)+' days ago.':'You haven’t backed up yet.'}</span><button data-go="reports">Back up</button></div>`;
   setHTML('#dueStrip',h)}
 function renderGoals(){const [ny,nm]=today().split('-').map(Number);
   setHTML('#goalList',X.goals.length?X.goals.map(g=>{const p=Math.min(100,g.saved/g.target*100),[dy,dm]=g.deadline.split('-').map(Number),ml=Math.max(1,(dy-ny)*12+dm-nm),need=Math.max(0,g.target-g.saved)/ml;
@@ -983,7 +983,7 @@ function renderExtra(){renderLimits();catAlerts();renderDue();renderGoals();rend
 
 /* click actions */
 async function notifyShow(t,o){try{const r=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();r?r.showNotification(t,o):new Notification(t,o)}catch{}}
-function notify(){if(!('Notification' in window)||Notification.permission!=='granted')return;bills.filter(b=>!b.paid&&daysTo(b.dueDate)<=2).forEach(b=>{const k='pw-n-'+b.id+b.dueDate+today();if(store.raw(k,''))return;store.setRaw(k,'1');const n=daysTo(b.dueDate);notifyShow('Pocketwise: '+b.name+' '+(n<0?'is overdue':n===0?'is due today':'is due in '+n+' day'+(n>1?'s':'')),{body:money(b.amount)})})}
+function notify(){if(!('Notification' in window)||Notification.permission!=='granted')return;bills.filter(b=>!b.paid&&daysTo(b.dueDate)<=2).forEach(b=>{const k='pw-n-'+b.id+b.dueDate+today();if(store.raw(k,''))return;store.setRaw(k,'1');const n=daysTo(b.dueDate);notifyShow('SpendSence: '+b.name+' '+(n<0?'is overdue':n===0?'is due today':'is due in '+n+' day'+(n>1?'s':'')),{body:money(b.amount)})})}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-x]');if(!b)return;const id=b.dataset.id,a=b.dataset.x,done=()=>{save();render()};
   if(a==='notif'){Notification.requestPermission().then(()=>{render();notify()})}
   else if(a==='goaldel'){X.goals=X.goals.filter(g=>g.id!==id);done()}
@@ -1013,18 +1013,18 @@ $('#csvFile').onchange=e=>{const file=e.target.files[0];e.target.value='';if(!fi
 
 /* app lock */
 const sha=async s=>{try{return[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('pw'+s)))].map(b=>b.toString(16).padStart(2,'0')).join('')}catch{return 'x'+btoa(s)}};
-let hiddenAt=0;const lockIf=()=>{if(store.raw('pocketwise-pin','')){$('#lock').hidden=false;$('#pinIn').value='';$('#lockErr').textContent='';setTimeout(()=>$('#pinIn').focus(),50)}};
-$('#lockForm').onsubmit=async e=>{e.preventDefault();if(await sha($('#pinIn').value)===store.raw('pocketwise-pin','')){$('#lock').hidden=true}else{$('#lockErr').textContent='Wrong PIN';$('#pinIn').value=''}};
+let hiddenAt=0;const lockIf=()=>{if(store.raw('SpendSence-pin','')){$('#lock').hidden=false;$('#pinIn').value='';$('#lockErr').textContent='';setTimeout(()=>$('#pinIn').focus(),50)}};
+$('#lockForm').onsubmit=async e=>{e.preventDefault();if(await sha($('#pinIn').value)===store.raw('SpendSence-pin','')){$('#lock').hidden=true}else{$('#lockErr').textContent='Wrong PIN';$('#pinIn').value=''}};
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else{if(hiddenAt&&Date.now()-hiddenAt>60000)lockIf();notify()}});
 const PINF=[{n:'p',l:'PIN (4–8 digits)',t:'password',a:'required pattern="\\d{4,8}" inputmode="numeric" autocomplete="off"'}];
-$('#pinSet').onclick=()=>ask('Set app PIN',PINF,async d=>{store.setRaw('pocketwise-pin',await sha(d.p));toast('PIN set — the app locks after 1 minute away')});
-$('#pinOff').onclick=()=>store.raw('pocketwise-pin','')?ask('Remove PIN',PINF,async d=>{if(await sha(d.p)===store.raw('pocketwise-pin','')){localStorage.removeItem('pocketwise-pin');toast('PIN removed')}else toast('Wrong PIN')}):toast('No PIN is set');
+$('#pinSet').onclick=()=>ask('Set app PIN',PINF,async d=>{store.setRaw('SpendSence-pin',await sha(d.p));toast('PIN set — the app locks after 1 minute away')});
+$('#pinOff').onclick=()=>store.raw('SpendSence-pin','')?ask('Remove PIN',PINF,async d=>{if(await sha(d.p)===store.raw('SpendSence-pin','')){localStorage.removeItem('SpendSence-pin');toast('PIN removed')}else toast('Wrong PIN')}):toast('No PIN is set');
 
 /* auto-backup to a file in a synced folder */
 let bkH=null,bkT;const bkMsg=m=>{$('#bkStatus').textContent=m};
 const idb=(m,k,v)=>new Promise((res,rej)=>{const r=indexedDB.open('pw',1);r.onupgradeneeded=()=>r.result.createObjectStore('k');r.onerror=()=>rej();r.onsuccess=()=>{const s=r.result.transaction('k',m).objectStore('k'),q=m==='readonly'?s.get(k):s.put(v,k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej()}});
-function scheduleBackup(){if(!bkH)return;clearTimeout(bkT);bkT=setTimeout(async()=>{try{if(await bkH.queryPermission({mode:'readwrite'})!=='granted'&&await bkH.requestPermission({mode:'readwrite'})!=='granted')return bkMsg('Auto-backup paused — tap “Choose auto-backup file” to reconnect');const w=await bkH.createWritable();await w.write(JSON.stringify(snapshot()));await w.close();store.setRaw('pocketwise-lastbk',String(Date.now()));bkMsg('Auto-backup: '+bkH.name+' · saved '+new Date().toLocaleTimeString())}catch{bkMsg('Auto-backup failed — choose the file again')}},2500)}
-$('#bkPick').onclick=async()=>{if(!window.showSaveFilePicker)return toast('This browser can’t auto-backup — use “Download backup”');try{bkH=await showSaveFilePicker({suggestedName:'pocketwise-autobackup.json',types:[{description:'JSON',accept:{'application/json':['.json']}}]});await idb('readwrite','h',bkH);scheduleBackup();toast('Auto-backup on — save it inside a Drive/OneDrive/Dropbox folder to sync it')}catch{}};
+function scheduleBackup(){if(!bkH)return;clearTimeout(bkT);bkT=setTimeout(async()=>{try{if(await bkH.queryPermission({mode:'readwrite'})!=='granted'&&await bkH.requestPermission({mode:'readwrite'})!=='granted')return bkMsg('Auto-backup paused — tap “Choose auto-backup file” to reconnect');const w=await bkH.createWritable();await w.write(JSON.stringify(snapshot()));await w.close();store.setRaw('SpendSence-lastbk',String(Date.now()));bkMsg('Auto-backup: '+bkH.name+' · saved '+new Date().toLocaleTimeString())}catch{bkMsg('Auto-backup failed — choose the file again')}},2500)}
+$('#bkPick').onclick=async()=>{if(!window.showSaveFilePicker)return toast('This browser can’t auto-backup — use “Download backup”');try{bkH=await showSaveFilePicker({suggestedName:'SpendSence-autobackup.json',types:[{description:'JSON',accept:{'application/json':['.json']}}]});await idb('readwrite','h',bkH);scheduleBackup();toast('Auto-backup on — save it inside a Drive/OneDrive/Dropbox folder to sync it')}catch{}};
 (async()=>{try{bkH=await idb('readonly','h');if(bkH)bkMsg('Auto-backup file: '+bkH.name)}catch{}if(!window.showSaveFilePicker)bkMsg('Auto-backup to a file needs Chrome/Edge on desktop or Android; use “Download backup” elsewhere.')})();
 
 /* start-up */
@@ -1032,7 +1032,7 @@ postRec();notify();setInterval(notify,36e5);lockIf();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 /* ---------- init ---------- */
-document.documentElement.dataset.theme=store.raw('pocketwise-theme',null)||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+document.documentElement.dataset.theme=store.raw('SpendSence-theme',null)||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
 render();
 </script>
 </body>
