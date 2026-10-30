@@ -1,4 +1,4 @@
-# Pocketwise
+# SPENDSENCE
 
 A private, offline-first personal finance tracker that runs entirely in your browser. No server, no account, no tracking — all data is stored on your own device.
 
@@ -208,10 +208,10 @@ A JSON file: `{ app, version, tx, bills, budgets, currency, profile, x }`. Backu
 
 | Capability | Chrome / Edge | Safari / iOS | Firefox |
 |---|---|---|---|
-| Core app | ✅ | ✅ | ✅ |
-| Install to home screen | ✅ | ✅ (Share → Add to Home Screen) | Android only |
-| Bill notifications | ✅ | iOS 16.4+, only when installed to the home screen | ✅ |
-| Auto-backup to a file | ✅ desktop and Android | ❌ | ❌ |
+| Core app | yes | yes | yes |
+| Install to home screen | yes | yes (Share → Add to Home Screen) | Android only |
+| Bill notifications | yes | iOS 16.4+, only when installed to the home screen | yes |
+| Auto-backup to a file | yes desktop and Android | No | No |
 
 ---
 
